@@ -139,9 +139,6 @@ class EDLParser(object):
                 motion = comment_handler.handled.get('motion_effect')
                 freeze = comment_handler.handled.get('freeze_frame')
                 if motion is not None or freeze is not None:
-                    # Adjust the clip to match the record duration
-                    clip.source_range.duration = rec_duration
-
                     if freeze is not None:
                         clip.effects.append(otio.schema.FreezeFrame())
                         # XXX remove 'FF' suffix (writing edl will add it back)
