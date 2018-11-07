@@ -348,6 +348,8 @@ class ClipHandler(object):
     def make_clip(self, comment_data):
         clip = otio.schema.Clip()
         clip.name = str(self.clip_num)
+        clip.reel = str(self.reel)
+        clip.src_name = str()
 
         # BLACK/BL and BARS are called out as "Special Source Identifiers" in
         # the documents referenced here:
@@ -372,7 +374,7 @@ class ClipHandler(object):
         # Without that there is no 'media_reference' Do we have a default
         # clip name?
         if 'clip_name' in comment_data:
-            clip.name = comment_data["clip_name"]
+            clip.src_name = comment_data["clip_name"]
         elif (
             clip.media_reference and
             hasattr(clip.media_reference, 'target_url') and
