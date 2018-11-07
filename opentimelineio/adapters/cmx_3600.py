@@ -477,6 +477,11 @@ class ClipHandler(object):
             otio.opentime.from_timecode(self.source_tc_out, self.edl_rate)
         )
 
+        clip.record_range = otio.opentime.range_from_start_end_time(
+            otio.opentime.from_timecode(self.record_tc_in, self.edl_rate),
+            otio.opentime.from_timecode(self.record_tc_out, self.edl_rate)
+        )
+
         return clip
 
     def parse(self, line):
@@ -918,8 +923,12 @@ class Event(object):
             clip.trimmed_range(),
             tracks
         )
-        line.record_in = range_in_timeline.start_time
-        line.record_out = range_in_timeline.end_time_exclusive()
+        if clip.record_range:
+            line.record_in = clip.record_range.start_time
+            line.record_out = clip.record_range.end_time_exclusive()
+        else:
+            line.record_in = range_in_timeline.start_time
+            line.record_out = range_in_timeline.end_time_exclusive()
         self.line = line
 
         self.comments = _generate_comment_lines(
