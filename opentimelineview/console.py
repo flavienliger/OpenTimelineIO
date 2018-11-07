@@ -45,6 +45,8 @@ def _parsed_args():
     parser.add_argument(
         'input',
         type=str,
+        nargs='?',
+        default=None,
         help='path to input file',
     )
     parser.add_argument(
