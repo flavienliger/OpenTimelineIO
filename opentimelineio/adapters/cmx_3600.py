@@ -139,9 +139,6 @@ class EDLParser(object):
                 motion = comment_handler.handled.get('motion_effect')
                 freeze = comment_handler.handled.get('freeze_frame')
                 if motion is not None or freeze is not None:
-                    # Adjust the clip to match the record duration
-                    clip.source_range.duration = rec_duration
-
                     if freeze is not None:
                         clip.effects.append(otio.schema.FreezeFrame())
                         # XXX remove 'FF' suffix (writing edl will add it back)
@@ -351,6 +348,8 @@ class ClipHandler(object):
     def make_clip(self, comment_data):
         clip = otio.schema.Clip()
         clip.name = str(self.clip_num)
+        clip.reel = str(self.reel)
+        clip.src_name = str()
 
         # BLACK/BL and BARS are called out as "Special Source Identifiers" in
         # the documents referenced here:
@@ -375,7 +374,7 @@ class ClipHandler(object):
         # Without that there is no 'media_reference' Do we have a default
         # clip name?
         if 'clip_name' in comment_data:
-            clip.name = comment_data["clip_name"]
+            clip.src_name = comment_data["clip_name"]
         elif (
             clip.media_reference and
             hasattr(clip.media_reference, 'target_url') and
@@ -475,6 +474,11 @@ class ClipHandler(object):
         clip.source_range = otio.opentime.range_from_start_end_time(
             otio.opentime.from_timecode(self.source_tc_in, self.edl_rate),
             otio.opentime.from_timecode(self.source_tc_out, self.edl_rate)
+        )
+
+        clip.record_range = otio.opentime.range_from_start_end_time(
+            otio.opentime.from_timecode(self.record_tc_in, self.edl_rate),
+            otio.opentime.from_timecode(self.record_tc_out, self.edl_rate)
         )
 
         return clip
@@ -918,8 +922,12 @@ class Event(object):
             clip.trimmed_range(),
             tracks
         )
-        line.record_in = range_in_timeline.start_time
-        line.record_out = range_in_timeline.end_time_exclusive()
+        if clip.record_range:
+            line.record_in = clip.record_range.start_time
+            line.record_out = clip.record_range.end_time_exclusive()
+        else:
+            line.record_in = range_in_timeline.start_time
+            line.record_out = range_in_timeline.end_time_exclusive()
         self.line = line
 
         self.comments = _generate_comment_lines(

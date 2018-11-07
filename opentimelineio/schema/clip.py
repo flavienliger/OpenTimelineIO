@@ -51,6 +51,7 @@ class Clip(core.Item):
         source_range=None,
         markers=[],
         effects=[],
+        record_range=None,
         metadata=None,
     ):
         core.Item.__init__(
@@ -59,6 +60,7 @@ class Clip(core.Item):
             source_range=source_range,
             markers=markers,
             effects=effects,
+            record_range=record_range,
             metadata=metadata
         )
 
@@ -102,10 +104,11 @@ class Clip(core.Item):
         return copy.copy(self.media_reference.available_range)
 
     def __str__(self):
-        return 'Clip("{}", {}, {}, {})'.format(
+        return 'Clip("{}", {}, {}, {}, {})'.format(
             self.name,
             self.media_reference,
             self.source_range,
+            self.record_range,
             self.metadata
         )
 
@@ -115,11 +118,13 @@ class Clip(core.Item):
             'name={}, '
             'media_reference={}, '
             'source_range={}, '
+            'record_range={}, '
             'metadata={}'
             ')'.format(
                 repr(self.name),
                 repr(self.media_reference),
                 repr(self.source_range),
+                repr(self.record_range),
                 repr(self.metadata),
             )
         )

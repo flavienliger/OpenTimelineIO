@@ -57,6 +57,7 @@ class Item(composable.Composable):
         self,
         name=None,
         source_range=None,
+        record_range=None,
         effects=None,
         markers=None,
         metadata=None,
@@ -66,12 +67,18 @@ class Item(composable.Composable):
         self.source_range = copy.deepcopy(source_range)
         self.effects = copy.deepcopy(effects) if effects else []
         self.markers = copy.deepcopy(markers) if markers else []
+        self.record_range = copy.deepcopy(record_range)
 
     name = serializable_object.serializable_field("name", doc="Item name.")
     source_range = serializable_object.serializable_field(
         "source_range",
         opentime.TimeRange,
         doc="Range of source to trim to.  Can be None or a TimeRange."
+    )
+    record_range = serializable_object.serializable_field(
+        "record_range",
+        opentime.TimeRange,
+        doc="Range of record to trim to.  Can be None or a TimeRange."
     )
 
     @staticmethod
@@ -209,6 +216,7 @@ class Item(composable.Composable):
             "otio.{}("
             "name={}, "
             "source_range={}, "
+            "record_range={}, "
             "effects={}, "
             "markers={}, "
             "metadata={}"
@@ -216,6 +224,7 @@ class Item(composable.Composable):
                 self._class_path,
                 repr(self.name),
                 repr(self.source_range),
+                repr(self.record_range),
                 repr(self.effects),
                 repr(self.markers),
                 repr(self.metadata)
@@ -223,10 +232,11 @@ class Item(composable.Composable):
         )
 
     def __str__(self):
-        return "{}({}, {}, {}, {}, {})".format(
+        return "{}({}, {}, {}, {}, {}, {})".format(
             self._class_path.split('.')[-1],
             self.name,
             str(self.source_range),
+            str(self.record_range),
             str(self.effects),
             str(self.markers),
             str(self.metadata)
