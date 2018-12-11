@@ -13,3 +13,4 @@ htmlcov
 # These files are generated, don't put them into source control
 docs/api
 .tox
+.mypy_cache
