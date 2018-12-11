@@ -349,7 +349,7 @@ class ClipHandler(object):
         clip = otio.schema.Clip()
         clip.name = str(self.clip_num)
         clip.reel = str(self.reel)
-        clip.src_name = str()
+        clip.source_file = str()
 
         # BLACK/BL and BARS are called out as "Special Source Identifiers" in
         # the documents referenced here:
@@ -369,6 +369,9 @@ class ClipHandler(object):
             ]
         else:
             clip.media_reference = otio.schema.MissingReference()
+
+        if 'source_file' in comment_data:
+            clip.metadata['source_file'] = comment_data['source_file']
 
         # this could currently break without a 'FROM CLIP' comment.
         # Without that there is no 'media_reference' Do we have a default
@@ -555,6 +558,7 @@ class CommentHandler(object):
     # needs to be ordered so that FROM CLIP NAME gets matched before FROM CLIP
     comment_id_map = collections.OrderedDict([
         ('FROM CLIP NAME', 'clip_name'),
+        ('SOURCE FILE', 'source_file'),
         ('FROM CLIP', 'media_reference'),
         ('FROM FILE', 'media_reference'),
         ('LOC', 'locator'),
